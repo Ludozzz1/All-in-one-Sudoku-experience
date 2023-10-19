@@ -151,6 +151,13 @@ def draw_coord(x: int, y: int):
     text_rect = text.get_rect(center=(coord_x,  coord_y))
     screen.blit(text, text_rect)
 
+#Function to draw the messages from the game.
+
+def draw_message(message: str):
+    text = font.render(message, 1, black)
+    text_rect = text.get_rect(center=(message_x,  message_y))
+    screen.blit(text, text_rect)
+
 # Function to draw the end message.
 
 def draw_finish():
@@ -188,7 +195,6 @@ while True:
         if start_button_x <= mouse_x <= start_button_x + button_width and start_button_y <= mouse_y <= start_button_y + button_height:
             if not start: 
                 start = True
-                inserting = False
                 num_input = ""
                 inserting_x, inserting_y = None, None
             else:
@@ -197,14 +203,8 @@ while True:
                 else:
                     is_special = np.full((sudoku_size, sudoku_size), False)
                     special_mode = False
-        elif insert_button_x <= mouse_x <= insert_button_x + button_width and insert_button_y <= mouse_y <= insert_button_y + button_height:
-            if not start:
-                if not inserting:
-                    inserting = True
-                else:
-                    inserting = False
-                    inserting_x, inserting_y = None, None
-            else:
+        elif cancel_button_x <= mouse_x <= cancel_button_x + button_width and cancel_button_y <= mouse_y <= cancel_button_y + button_height:
+            if start:
                 if special_mode:
                     for i in range(sudoku_size):
                         for j in range(sudoku_size):
@@ -222,25 +222,28 @@ while True:
                             special_mode = False
             if resolve_sudoku(sudoku, 0, 0):
                 solved = True
+                start = False
+                special_mode = False
+                inserting_x, inserting_y = None, None
+                num_input = ""
             else:
                 error = InsertionError("Sudoku is not solvable", pg.time.get_ticks())
-        elif off_x <= mouse_x <= off_x + box_size and off_y <= mouse_y <= off_y + box_size and (inserting or start):
+        elif off_x <= mouse_x <= off_x + box_size and off_y <= mouse_y <= off_y + box_size and not solved:
             temp_x = mouse_x - off_x
             temp_y = mouse_y - off_y
             inserting_x = temp_x // dif
             inserting_y = temp_y // dif
-            if sudoku[inserting_y][inserting_x] != novalue and (inserting or not is_inserted[inserting_y][inserting_x]):
+            if sudoku[inserting_y][inserting_x] != novalue and not start:
                 sudoku[inserting_y][inserting_x] = novalue
-                if inserting:
-                    is_inserted[inserting_y][inserting_x] = False
-                    inserting_x, inserting_y = None, None
+                is_inserted[inserting_y][inserting_x] = False
+                inserting_x, inserting_y = None, None
             elif is_inserted[inserting_y][inserting_x] and start:
                 inserting_x, inserting_y = None, None
     elif event.type == pg.KEYDOWN:
         if event.key == pg.K_BACKSPACE:
             num_input = num_input[:-1]
         else:
-            if not inserting_x == None and not insert_button_y == None:
+            if not inserting_x == None and not inserting_y == None:
                 num_input += event.unicode
                 result, error = check_insert(inserting_x, inserting_y, num_input)
                 if result:
@@ -270,20 +273,16 @@ while True:
         else:
             draw_error_text(error.message)
     if not solved:
-        if not inserting:
-            draw_button("Solve", solve_button_x, solve_button_y)
+        draw_button("Solve", solve_button_x, solve_button_y)
         if not start:
+            draw_message("Click on boxes to insert numbers")
             draw_button("Start game", start_button_x, start_button_y)
-            if not inserting:
-                draw_button("Insert", insert_button_x, insert_button_y)
-            else:
-                draw_button("End insertion", insert_button_x, insert_button_y)
         else:
             if not special_mode:
                 draw_button("Helper mode", start_button_x, start_button_y)
             else:
                 draw_button("Add changes", start_button_x, start_button_y)
-                draw_button("Cancel", insert_button_x, insert_button_y)
+                draw_button("Cancel", cancel_button_x, cancel_button_y)
 
     finished = True
     for i in range(sudoku_size):
@@ -294,5 +293,4 @@ while True:
         draw_finish()
         draw_button("Start again", start_again_x, start_again_y)
 
-    change = False
     pg.display.flip()   
