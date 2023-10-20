@@ -173,9 +173,9 @@ def draw_finish():
 #   - KEYDOWN: to check if a key is pressed
 # Mouse events:
 #   - if the mouse is clicked on the start button, the game starts
-#   - if the mouse is clicked on the insert button, the insertion mode starts
 #   - if the mouse is clicked on the solve button, the sudoku is solved
 #   - if the mouse is clicked on the sudoku, the game waits for the user input and saves the coordinates
+#   - if the mouse is clicked on the start again button, the game goes back to the original state
 # Key events:
 #   - if the key pressed is a number, the number is added to the user input
 #   - if the key pressed is ENTER, the game tries to insert the number in the sudoku; if it can't an error is created
@@ -239,6 +239,15 @@ while True:
                 inserting_x, inserting_y = None, None
             elif is_inserted[inserting_y][inserting_x] and start:
                 inserting_x, inserting_y = None, None
+        elif start_again_x <= mouse_x <= start_again_x + button_width and start_again_y <= mouse_y <= start_again_y + button_height:
+            sudoku = np.full((sudoku_size, sudoku_size), novalue)
+            is_special = np.full((sudoku_size, sudoku_size), False)
+            is_inserted = np.full((sudoku_size, sudoku_size), False)
+            solved = False
+            start = False
+            special_mode = False
+            inserting_x, inserting_y = None, None
+            num_input = ""
     elif event.type == pg.KEYDOWN:
         if event.key == pg.K_BACKSPACE:
             num_input = num_input[:-1]
