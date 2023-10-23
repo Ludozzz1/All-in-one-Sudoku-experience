@@ -4,13 +4,13 @@ import sys
 from const import *
 from error import *
 
-#aggiungere start again, aggiungere note
+#aggiungere note
 
 pg.init()
 
-font = pg.font.SysFont("comicsans", 40)
-number_font = pg.font.SysFont("comicsans", 50)
-special_num_font = pg.font.SysFont("comicsans", 30)
+font = pg.font.SysFont("calibri", 30)
+number_font = pg.font.SysFont("calibri", 40)
+special_num_font = pg.font.SysFont("calibri", 25)
 pg.display.set_caption("Sudoku Solver")
 screen = pg.display.set_mode((width, height))
 screen.fill(white)
@@ -20,7 +20,7 @@ is_inserted = np.full((sudoku_size, sudoku_size), False)
  
 # Function to solve sudoku with backtracking. 
 # It uses the check_costraints function to check if the number is valid.
-# It takes the sudoku as grid, and the row and the column in which you wnat to try to insert the numbers.
+# It takes the sudoku as grid, and the row and the column in which you want to try to insert the numbers.
 
 def resolve_sudoku(grid, row, col):
     if (row == sudoku_size - 1 and col == sudoku_size):
@@ -288,7 +288,7 @@ while True:
             draw_button("Start game", start_button_x, start_button_y)
         else:
             if not special_mode:
-                draw_button("Helper mode", start_button_x, start_button_y)
+                draw_button("Help mode", start_button_x, start_button_y)
             else:
                 draw_button("Add changes", start_button_x, start_button_y)
                 draw_button("Cancel", cancel_button_x, cancel_button_y)
